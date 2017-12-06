@@ -86,3 +86,60 @@ if (true /*run tests*/) {
     });
 }
 ```
+
+### Simple command line argument getter
+```javascript
+function getArg(argv, name) {
+    // search for name from index 2
+    const argIndex = argv.indexOf('-' + name, 2);
+    if (argIndex === -1) {
+        return null;
+    }
+
+    let argValue = argv[argIndex + 1];
+    return typeof argValue == 'string' && argValue[0] !== '-' ? argValue : true;
+}
+```
+### Naive and simple delayed call (usefull for testing)
+```javascript
+/**
+ * Promise version of delayed function call. Good for testing, great with async/await to flatten the code
+ * @param {Function} fn
+ * @param {number} delay
+ * @return {Promise}
+ */
+function delayedCall(fn, delay) {
+
+    return new Promise((resolve, reject) => setTimeout(() => fn() || resolve(), delay));
+}
+```
+### Semioptimal & optimal version of fibonacci function
+```javascript
+// semioptimal
+function fibonacci(n) {
+
+    let result = [0, 1, 1, 2];
+    let index = result.length;
+    while (n >= index) {
+        result.push(result[index - 1] + result[index++ - 2]);
+    }
+
+    return result[n];
+}
+
+// optimal version
+function fibonacciOptimal(n) {
+
+    if (n === 0) return 0;
+    if (n === 1 || n === 2) return 1;
+
+    let tmp, n1 = 1, n2 = 1, index = 2;
+    while (n > index++) {
+        tmp = n2;
+        n2 = n2 + n1;
+        n1 = tmp;
+    }
+
+    return n2;
+}
+```
