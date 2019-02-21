@@ -143,3 +143,58 @@ function fibonacciOptimal(n) {
     return n2;
 }
 ```
+
+### Async/await brokes custom Promise implementations
+```javascript
+const OrigPromise = global.Promise;
+const Promise = require('bluebird');
+
+async function MakePromise(obj) { return obj; }
+async function MakePromiseAwait(obj) { return await obj; }
+
+const bPromise = new Promise((res,rej) => res(666));
+const oPromise = new OrigPromise((res,rej) => res(666));
+
+function whichPromise(obj) {
+
+    if (obj instanceof OrigPromise) {
+        return 'original';
+    }
+
+    if (obj instanceof Promise) {
+        return 'bluebird';
+    }
+
+    return 'not any promise';
+}
+
+console.log('whichPromise(oPromise) is', whichPromise(oPromise));
+console.log('whichPromise(bPromise) is', whichPromise(bPromise));
+console.log('whichPromise(42) is', whichPromise(42));
+console.log('MakePromise(42) is', whichPromise(MakePromise(42)));
+console.log('MakePromise(oPromise) is', whichPromise(MakePromise(oPromise)));
+console.log('MakePromise(bPromise) is', whichPromise(MakePromise(bPromise)));
+console.log('MakePromiseAwait(42) is', whichPromise(MakePromiseAwait(42)));
+console.log('MakePromiseAwait(oPromise) is', whichPromise(MakePromiseAwait(oPromise)));
+console.log('MakePromiseAwait(bPromise) is', whichPromise(MakePromiseAwait(bPromise)));
+
+bPromise.finally(() => {
+    console.log(`Whooohooo!`);
+});
+
+try {
+    MakePromise(bPromise).finally(() => {
+        console.log(`Whooohooo!`);
+    });
+} catch(err) {
+    console.log('Yep! ES7 is also fucked', err);
+}
+```
+
+### Usefull undocumented V8 functions
+```javascript
+// returns active handles stuck on engine
+process._getActiveHandles();
+// returns active requests stuck in event queue
+process._getActiveRequests();
+```
